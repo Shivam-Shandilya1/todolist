@@ -1,57 +1,66 @@
 var express =require ("express");
 var bodyParser = require("body-parser");
+const e = require("express");
 var app = express();
-
+app.use(express.static("public"));
 app.set("view engine", "ejs");
+var bodyParser= app.use(bodyParser.urlencoded({extended:true}));
+var tasks = [];
+var workItems = [];
+var today = new Date();
 
 app.get("/",function(req,res)
 {
-    var today =new Date();
-  
-    var day =today.getDay();
-    var dayname="";
-    if(day == 0)
-    {
-        dayname="Sunday";
-        
-    }
-    if(day == 1)
-    {
-        dayname="Monday";
-       
-    }
-    if(day == 2)
-    {
-        dayname="Tuesday";
-       
-    }
-    if(day == 3)
-    {
-        dayname="Wednesday";
-       
-    }
-    if(day == 4)
-    {
-        dayname="Thursday";
-       
-    }
-    if(day == 5)
-    {
-       dayName="Friday";
+    
+    var options={
+        weekday:"long",
+        day:"numeric",
+        month:"long"
     };
-    if(day == 6)
-    {
-        dayname="Saturday";
+    var day =today.toLocaleDateString("en-IN",options);
+    
+    
+    res.render("list.ejs",{
         
-    };
-    res.render("list",
-        {
-            day:dayname
-            
-        });
+        listTitle:day,newListItems:tasks,
+    });
   
 
 }); 
+app.get("/work",function(req,res)
+{
+     res.render("list.ejs",{
+        
+        listTitle:"Work List",newListItems:workItems,
+    });
+  
+});
+
+app.post("/",function(req,res)
+{
+    console.log(req.body);
+    task= req.body.work;
+    if(req.body.addbtn === "Work")
+    {
+        workItems.push(task);
+        res.redirect("/work");
+    }
+    else
+    {
+        tasks.push(task);
+    
+        res.redirect("/");
+    }
+   
+
+    
+});
+app.post("/work",function(req,res)
+{
+  task = req.body.work;
+  workItems.push(task);
+  res.redirect("/work");
+})
    
 app.listen(3000,function()
 {
