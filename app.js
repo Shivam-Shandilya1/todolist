@@ -1,13 +1,35 @@
 var express =require ("express");
 var bodyParser = require("body-parser");
-const e = require("express");
+const mongoose = require("mongoose");
 var app = express();
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 var bodyParser= app.use(bodyParser.urlencoded({extended:true}));
+mongoose.connect("mongodb://localhost:27017/todolistDB",{useNewUrlParser:true,useUnifiedTopology: true });
 var tasks = [];
 var workItems = [];
 var today = new Date();
+
+const itemsSchema = new mongoose.Schema({
+    name:String
+})
+;
+
+const Item = mongoose.model("Item",itemsSchema);
+
+
+    const item1= new Item({name:"Helo"});
+    const item2= new Item({name:"Hoe"});
+    const item3= new Item({name:"Yo"});
+    const defaultItems=[item1, item2, item3];
+    Item.insertMany(defaultItems,function(err)
+    {
+        if (err)
+        {
+            console.log(err);
+        }else{console.log("Successfully saved default items to DB.")}
+    });
+
 
 app.get("/",function(req,res)
 {
@@ -19,7 +41,17 @@ app.get("/",function(req,res)
     };
     var day =today.toLocaleDateString("en-IN",options);
     
-    
+    const getDocument = async()=>
+    {try{
+        const results = await Item.find({});
+        console.log(results);
+       }catch(err)
+       {
+           console.log(err);
+       }
+        
+    }   
+   getDocument();
     res.render("list.ejs",{
         
         listTitle:day,newListItems:tasks,
@@ -55,6 +87,7 @@ app.post("/",function(req,res)
 
     
 });
+
 app.post("/work",function(req,res)
 {
   task = req.body.work;
