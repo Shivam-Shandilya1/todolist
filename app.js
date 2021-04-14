@@ -22,13 +22,6 @@ const Item = mongoose.model("Item",itemsSchema);
     const item2= new Item({name:"Hoe"});
     const item3= new Item({name:"Yo"});
     const defaultItems=[item1, item2, item3];
-    Item.insertMany(defaultItems,function(err)
-    {
-        if (err)
-        {
-            console.log(err);
-        }else{console.log("Successfully saved default items to DB.")}
-    });
 
 
 app.get("/",function(req,res)
@@ -54,7 +47,7 @@ app.get("/",function(req,res)
    getDocument();
     res.render("list.ejs",{
         
-        listTitle:day,newListItems:tasks,
+        listTitle:day,newListItems:defaultItems,
     });
   
 
@@ -72,6 +65,7 @@ app.post("/",function(req,res)
 {
     console.log(req.body);
     task= req.body.work;
+    
     if(req.body.addbtn === "Work")
     {
         workItems.push(task);
@@ -79,8 +73,11 @@ app.post("/",function(req,res)
     }
     else
     {
-        tasks.push(task);
     
+        const item4 = new Item ({name:task});
+
+        defaultItems.push(item4);
+        Item.insertMany(defaultItems);
         res.redirect("/");
     }
    
