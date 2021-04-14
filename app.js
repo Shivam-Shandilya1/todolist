@@ -74,7 +74,7 @@ app.post("/",function(req,res)
     }
     else
     {
-        for(var i=3;i<defaultItems.length;i++)
+        for(var i=0;i<defaultItems.length;i++)
          { 
             const createDocument=async()=>
             {
