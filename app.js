@@ -64,8 +64,9 @@ app.get("/work",function(req,res)
 app.post("/",function(req,res)
 {
     console.log(req.body);
-    task= req.body.work;
-    
+    task=req.body.work;
+    task= new Item({name:req.body.work});
+    defaultItems.push(task);
     if(req.body.addbtn === "Work")
     {
         workItems.push(task);
@@ -73,11 +74,20 @@ app.post("/",function(req,res)
     }
     else
     {
-    
-        const item4 = new Item ({name:task});
-
-        defaultItems.push(item4);
-        Item.insertMany(defaultItems);
+        for(var i=3;i<defaultItems.length;i++)
+         { 
+            const createDocument=async()=>
+            {
+                try
+                {
+                    Item.insertMany(defaultItems[i])
+                }catch(err)
+                {
+                    console.log(err);
+                }
+            }
+             createDocument();
+         }    
         res.redirect("/");
     }
    
