@@ -74,20 +74,40 @@ app.post("/",function(req,res)
     }
     else
     {
-        for(var i=0;i<defaultItems.length;i++)
-         { 
-            const createDocument=async()=>
-            {
-                try
-                {
-                    Item.insertMany(defaultItems[i])
-                }catch(err)
-                {
-                    console.log(err);
-                }
-            }
-             createDocument();
-         }    
+        if(defaultItems.length <= 3)
+        {
+            for(var i=0;i<defaultItems.length;i++)
+            { 
+               const createDocument=async()=>
+               {
+                   try
+                   {
+                       Item.insertMany(defaultItems[i])
+                   }catch(err)
+                   {
+                       console.log(err);
+                   }
+               }
+                createDocument();
+            }   
+        }else
+        {
+            for(var i=3;i<defaultItems.length;i++)
+            { 
+               const createDocument=async()=>
+               {
+                   try
+                   {
+                       Item.insertMany(defaultItems[i])
+                   }catch(err)
+                   {
+                       console.log(err);
+                   }
+               }
+                createDocument();
+            }  
+        }
+         
         res.redirect("/");
     }
    
