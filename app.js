@@ -121,6 +121,18 @@ app.post("/work",function(req,res)
   workItems.push(task);
   res.redirect("/work");
 })
+app.post("/delete",function(req,res)
+{
+const itemID=req.body.check;
+Item.findByIdAndDelete(itemID,function(err)
+{
+    if(err)
+    {
+        console.log(err);
+    }
+})
+res.redirect("/");
+});
    
 app.listen(3000,function()
 {
