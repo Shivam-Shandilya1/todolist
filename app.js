@@ -123,12 +123,37 @@ app.get("/:customListName",function(req,res)
 {
    var customListName =req.params.customListName;
    console.log(customListName);
-   var list = new List (
+   if(Documents.length == 0)
+   {
+    var list = new List (
+        {
+            name:customListName,
+            items:defaultItems
+        });
+        list.save();
+       Documents.push(list.name);
+       
+   }else if(Documents.length !==0)
+   {
+    const checker = Documents.includes(customListName,0);
+    if(!checker)
     {
-        name:customListName,
-        items:defaultItems
-    });
+        var list = new List (
+            {
+                name:customListName,
+                items:defaultItems
+            });
+            list.save();
+           Documents.push(list.name);
+    }
+    else if(checker)
+    {
+       console.log("already Exist");
+    }
+   }
    
+   
+
   
    res.render("list",{newListItems:defaultItems,listTitle:customListName});
   
