@@ -1,6 +1,6 @@
 var express =require ("express");
 var bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+var mongoose = require("mongoose");
 var app = express();
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -9,21 +9,26 @@ mongoose.connect("mongodb://localhost:27017/todolistDB",{useNewUrlParser:true,us
 var tasks = [];
 var workItems = [];
 var today = new Date();
+var Documents = [];
 
-const itemsSchema = new mongoose.Schema({
+var itemsSchema = new mongoose.Schema({
     name:String
-})
-;
+});
 
-const Item = mongoose.model("Item",itemsSchema);
-
-
-    const item1= new Item({name:"Helo"});
-    const item2= new Item({name:"Hoe"});
-    const item3= new Item({name:"Yo"});
-    const defaultItems=[item1, item2, item3];
+var listSchema ={
+    name: String,
+    items:[itemsSchema]
+};
+var Item = mongoose.model("Item",itemsSchema);
 
 
+   var item1= new Item({name:"Helo"});
+   var item2= new Item({name:"Hoe"});
+   var item3= new Item({name:"Yo"});
+   var defaultItems=[item1, item2, item3];
+
+    
+ var List = mongoose.model("list",listSchema)
 app.get("/",function(req,res)
 {
     
@@ -34,9 +39,9 @@ app.get("/",function(req,res)
     };
     var day =today.toLocaleDateString("en-IN",options);
     
-    const getDocument = async()=>
+   var getDocument = async()=>
     {try{
-        const results = await Item.find({});
+       var results = await Item.find({});
         console.log(results);
        }catch(err)
        {
@@ -78,7 +83,7 @@ app.post("/",function(req,res)
         {
             for(var i=0;i<defaultItems.length;i++)
             { 
-               const createDocument=async()=>
+              var createDocument=async()=>
                {
                    try
                    {
@@ -94,7 +99,7 @@ app.post("/",function(req,res)
         {
             for(var i=3;i<defaultItems.length;i++)
             { 
-               const createDocument=async()=>
+              var createDocument=async()=>
                {
                    try
                    {
@@ -114,6 +119,20 @@ app.post("/",function(req,res)
 
     
 });
+app.get("/:customListName",function(req,res)
+{
+   var customListName =req.params.customListName;
+   console.log(customListName);
+   var list = new List (
+    {
+        name:customListName,
+        items:defaultItems
+    });
+   
+  
+   res.render("list",{newListItems:defaultItems,listTitle:customListName});
+  
+});
 
 app.post("/work",function(req,res)
 {
@@ -132,6 +151,8 @@ Item.findByIdAndDelete(itemID,function(err)
     }
 })
 res.redirect("/");
+const taskName = Item.find(itemID).select({name:1,_id:0});
+defaultItems.pop(taskName);
 });
    
 app.listen(3000,function()
